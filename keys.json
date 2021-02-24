@@ -1,0 +1,16 @@
+{
+  "UP":         ["⬆️","up"],
+  "RIGHT_UP":   ["↗️"],
+  "RIGHT":      ["➡️","right"],
+  "RIGHT_DOWN": ["↘️"],
+  "DOWN":       ["⬇️","down"],
+  "LEFT_DOWN":  ["↙️"],
+  "LEFT":       ["⬅️","left"],
+  "LEFT_UP":    ["↖️"],
+  "BUTTON_A":   ["🇦","x"],
+  "BUTTON_B":   ["🇧","z"],
+  "BUTTON_X":   ["🇽","s"],
+  "BUTTON_Y":   ["🇾","a"],
+  "START":      ["▶️","enter"],
+  "SELECT":     ["☑️","rshift"]
+}
