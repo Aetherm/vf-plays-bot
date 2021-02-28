@@ -39,7 +39,9 @@ CLIENT.on('message', message => {
         }else{
             message.react('❌').then();
         }
-    } else if (!message.content.startsWith(PREFIX)) return;
+    }
+
+    if (!message.content.startsWith(PREFIX)) return;
 
     const args = message.content.slice(PREFIX.length).trim().split(' ');
     const command = args.shift().toLowerCase();
