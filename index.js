@@ -31,6 +31,9 @@ CLIENT.on('message', message => {
     //not listening to bot posts
     if(message.author.bot) return;
 
+    const ARGS = message.content.slice(PREFIX.length).trim().split(' ');
+    const COMMAND = ARGS.shift().toLowerCase();
+
     //if the channel is set to be the input channel for the chat controls
     if(inputChannel === message.channel) {
 
@@ -43,18 +46,15 @@ CLIENT.on('message', message => {
 
     if (!message.content.startsWith(PREFIX)) return;
 
-    const args = message.content.slice(PREFIX.length).trim().split(' ');
-    const command = args.shift().toLowerCase();
-
     //if the message wasn't send from within a DM
     if(message.guild !== null) {
-        if (command === 'ping' && !args.length) {
+        if (COMMAND === 'ping' && !ARGS.length) {
             // send back "pong!" to the channel the message was sent in
             message.channel.send('pong'+PREFIX).then();
         } else if (message.member.hasPermission('ADMINISTRATOR')) {
-            if (command === 'controller' && !args.length) {
+            if (COMMAND === 'controller' && !ARGS.length) {
                 createController(message.channel).then();
-            } else if (command === 'ic' && !args.length){
+            } else if (COMMAND === 'ic' && !ARGS.length){
                 inputChannel = message.channel;
                 message.channel.send("**This channel is now the bots main input channel**\n" +
                     "Post one of the following emojis to make an input : ]\n" +
