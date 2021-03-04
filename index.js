@@ -2,7 +2,7 @@ const BOT_VERSION = '0.1-alpha';
 const BOT_COLOR = '0xDE494E';
 const DISCORD = require('discord.js');
 const { PREFIX, TOKEN, GAME} = require('./config.json');
-const KEYS = require('./keys.json');
+const KEYS = require('./sample-keys.json');
 const CLIENT = new DISCORD.Client({ partials: ['MESSAGE', 'REACTION'] });
 const INPUT = require('./input.js');
 
@@ -16,7 +16,9 @@ const CONTROLS_MESSAGE = `D-Pad: ${KEYS.UP[0]}, ${KEYS.RIGHT_UP[0]}, ${KEYS.RIGH
                             `X-Button: ${KEYS.BUTTON_X[0]}\n`+
                             `Y-Button: ${KEYS.BUTTON_Y[0]}\n`+
                             `START   : ${KEYS.START[0]}\n`+
-                            `SELECT  : ${KEYS.SELECT[0]}`
+                            `SELECT  : ${KEYS.SELECT[0]}\n`+
+                            `R-BUTTON: ${KEYS.BUTTON_R[0]}\n`+
+                            `L-BUTTON: ${KEYS.BUTTON_L[0]}\n`
 
 CLIENT.once('ready', () => {
     console.log('Ready!');
@@ -31,18 +33,37 @@ CLIENT.on('message', message => {
     //not listening to bot posts
     if(message.author.bot) return;
 
-    const ARGS = message.content.slice(PREFIX.length).trim().split(' ');
-    const COMMAND = ARGS.shift().toLowerCase();
-
-    //if the channel is set to be the input channel for the chat controls
+    //if the channel is set to be the input channel for the chat
+    //also hacky unusual approach without prefix
     if(inputChannel === message.channel) {
 
-        if(emojiInput(message.content) === true){
+        //the message split at the spaces (in this case hopefully a valid emoji that we accept plus a duration)
+        let splitMessage = message.content.trim().split(' ')
+        let durationArg = parseInt(splitMessage[splitMessage.length-1]);
+
+        //check if argument is an integer
+        if(!Object.is(NaN, durationArg)) {
+
+            if(durationArg <= 40 && durationArg >= 1)
+
+                //100 milliseconds times the input between 1 to 20, so 4 seconds max duration
+                INPUT.setPressFor(100*durationArg);
+        } else{
+            //delay of a key press, 1000ms / 60 frames = ~17
+            INPUT.setPressFor(17);
+        }
+
+        if(emojiInput(splitMessage[0]) === true){
             message.react('🆗').then();
         }else{
             message.react('❌').then();
         }
+
     }
+
+    //classic input commands
+    const ARGS = message.content.slice(PREFIX.length).trim().split(' ');
+    const COMMAND = ARGS.shift().toLowerCase();
 
     if (!message.content.startsWith(PREFIX)) return;
 
@@ -58,6 +79,8 @@ CLIENT.on('message', message => {
                 inputChannel = message.channel;
                 message.channel.send("**This channel is now the bots main input channel**\n" +
                     "Post one of the following emojis to make an input : ]\n" +
+                    "**NEW:** write a number between 1 (100 milliseconds) and 40 (4 seconds) behind the emoji\n" +
+                    "to control how long the button is pressed\n" +
                     CONTROLS_MESSAGE).then();
             }
         } else {
@@ -82,14 +105,18 @@ CLIENT.on('messageReactionAdd', async (reaction, user) => {
             return;
         }
     }
-    if(!user.bot)
-        emojiInput(reaction.emoji.name)
+    if(!user.bot) {
+        //delay of a key press, 1000ms / 60 frames = ~17
+        INPUT.setPressFor(17);
+        emojiInput(reaction.emoji.name);
+    }
 });
 
 /**
  * Converts a given emoji into the respective input operation
  *
  * @param emoji The emoji that stands for an input.
+ * @param duration For how long the button should be pressed.
  *
  * @return boolean True if the emoji matches one of the control emojis given in the json, false if not.
  */
@@ -140,6 +167,12 @@ function emojiInput(emojiName){
         case KEYS.SELECT[0]:
             INPUT.select();
             break;
+        case KEYS.BUTTON_R[0]:
+            INPUT.r();
+            break;
+        case KEYS.BUTTON_L[0]:
+            INPUT.l();
+            break;
         default:
             //if input did not match one of the given emojis
             ret = false;
@@ -159,7 +192,7 @@ async function createController(channel) {
         .setColor(BOT_COLOR)
         .setTitle("CONTROLLER")
         .setDescription("**IMPORTANT**\nDon't click spam! This can result in a temporal *Discord Ban*. "+
-                        "Keep a few seconds between inputs. THIS IS NOT A JOKE." +
+                        "Keep circa half a second between inputs. THIS IS NOT A JOKE." +
                         "If you want to be 100% safe, just post the wanted emoji in a text channel with this bot : ]")
         .addField('controls', CONTROLS_MESSAGE)
 
@@ -179,5 +212,7 @@ async function createController(channel) {
         await embedMessage.react(KEYS.BUTTON_Y[0]);
         await embedMessage.react(KEYS.START[0]);
         await embedMessage.react(KEYS.SELECT[0]);
+        await embedMessage.react(KEYS.BUTTON_R[0]);
+        await embedMessage.react(KEYS.BUTTON_L[0]);
     });
 }

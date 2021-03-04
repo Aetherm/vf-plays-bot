@@ -12,5 +12,7 @@
   "BUTTON_X":   ["🇽","s"],
   "BUTTON_Y":   ["🇾","a"],
   "START":      ["▶️","enter"],
-  "SELECT":     ["☑️","rshift"]
+  "SELECT":     ["☑️","rshift"],
+  "BUTTON_R":   ["🇷","w"],
+  "BUTTON_L":   ["🇱","q"]
 }
