@@ -75,6 +75,8 @@ CLIENT.on('message', message => {
         } else if (message.member.hasPermission('ADMINISTRATOR')) {
             if (COMMAND === 'controller' && !ARGS.length) {
                 createController(message.channel).then();
+            } else if (COMMAND === 'switch' && !ARGS.length){
+                createScreenSwitch(message.channel).then();
             } else if (COMMAND === 'ic' && !ARGS.length){
                 inputChannel = message.channel;
                 message.channel.send("**This channel is now the bots main input channel**\n" +
@@ -173,12 +175,48 @@ function emojiInput(emojiName){
         case KEYS.BUTTON_L[0]:
             INPUT.l();
             break;
+        case "0️⃣":
+            INPUT.screenMode0();
+            break;
+        case "1️⃣":
+            INPUT.screenMode1();
+            break;
+        case "2️⃣":
+            INPUT.screenMode2();
+            break;
+        case "🔄":
+            INPUT.switchPrimaryScreen();
+            break;
         default:
             //if input did not match one of the given emojis
             ret = false;
             break;
     }
     return ret;
+}
+
+/**
+ * Creates the message that holds the switch to change screen modes in form of reactions and posts it into the given
+ * channel
+ *
+ * @param channel The channel where this should be send to.
+ */
+async function createScreenSwitch(channel) {
+    let reactionEmbed = new DISCORD.MessageEmbed()
+        .setColor(BOT_COLOR)
+        .setTitle("SCREEN SWITCH")
+        .setDescription("Here you can switch the different screen modes.")
+        .addField("description",
+            "switching between screen modes:\n0️⃣, 1️⃣, 2️⃣\n"+
+                    "switching primary screen:\n🔄")
+
+    channel.send({embed: reactionEmbed}).then(async embedMessage => {
+
+        await embedMessage.react("0️⃣");
+        await embedMessage.react("1️⃣");
+        await embedMessage.react("2️⃣");
+        await embedMessage.react("🔄");
+    });
 }
 
 /**

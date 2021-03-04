@@ -63,5 +63,17 @@ module.exports = {
     },
     l: function () {
         KEY_SENDER.sendKey(KEYS.BUTTON_L[1])
+    },
+    screenMode0: function () {
+        KEY_SENDER.sendCombination(["control", "0"])
+    },
+    screenMode1: function () {
+        KEY_SENDER.sendCombination(["control", "1"])
+    },
+    screenMode2: function () {
+        KEY_SENDER.sendCombination(["control", "2"])
+    },
+    switchPrimaryScreen: function () {
+        KEY_SENDER.sendKey("space");
     }
 };
