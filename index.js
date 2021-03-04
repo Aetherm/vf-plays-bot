@@ -15,10 +15,10 @@ const CONTROLS_MESSAGE = `D-Pad: ${KEYS.UP[0]}, ${KEYS.RIGHT_UP[0]}, ${KEYS.RIGH
                             `B-Button: ${KEYS.BUTTON_B[0]}\n`+
                             `X-Button: ${KEYS.BUTTON_X[0]}\n`+
                             `Y-Button: ${KEYS.BUTTON_Y[0]}\n`+
-                            `START   : ${KEYS.START[0]}\n`+
-                            `SELECT  : ${KEYS.SELECT[0]}\n`+
-                            `R-BUTTON: ${KEYS.BUTTON_R[0]}\n`+
-                            `L-BUTTON: ${KEYS.BUTTON_L[0]}\n`
+                            `START: ${KEYS.START[0]}\n`+
+                            `SELECT: ${KEYS.SELECT[0]}\n`+
+                            `R-Button: ${KEYS.BUTTON_R[0]}\n`+
+                            `L-Button: ${KEYS.BUTTON_L[0]}\n`
 
 CLIENT.once('ready', () => {
     console.log('Ready!');
@@ -230,8 +230,8 @@ async function createController(channel) {
         .setColor(BOT_COLOR)
         .setTitle("CONTROLLER")
         .setDescription("**IMPORTANT**\nDon't click spam! This can result in a temporal *Discord Ban*. "+
-                        "Keep circa half a second between inputs. THIS IS NOT A JOKE." +
-                        "If you want to be 100% safe, just post the wanted emoji in a text channel with this bot : ]")
+                        "Keep circa half a second between inputs. THIS IS NOT A JOKE. " +
+                        "If you want to be 100% safe, just post the emoji in a text channel with this bot : ]")
         .addField('controls', CONTROLS_MESSAGE)
 
     channel.send({embed: reactionEmbed}).then(async embedMessage => {
