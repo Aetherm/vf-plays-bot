@@ -2,7 +2,7 @@ const BOT_VERSION = '0.1-alpha';
 const BOT_COLOR = '0xDE494E';
 const DISCORD = require('discord.js');
 const { PREFIX, TOKEN, GAME} = require('./config.json');
-const KEYS = require('./sample-keys.json');
+const KEYS = require('./keys.json');
 const CLIENT = new DISCORD.Client({ partials: ['MESSAGE', 'REACTION'] });
 const INPUT = require('./input.js');
 
