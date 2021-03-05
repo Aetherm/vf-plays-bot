@@ -12,7 +12,7 @@ module.exports = {
         KEY_SENDER.sendKey(KEYS.UP[1]);
     },
     rightUp: function () {
-        KEY_SENDER.sendCombination([KEYS.RIGHT[1], KEYS.UP[1]]);
+        KEY_SENDER.sendCombination([KEYS.BUTTON_R[1], KEYS.RIGHT[1], KEYS.UP[1]]);
         //KEY_SENDER.sendKey(KEYS.RIGHT[1]);
         //KEY_SENDER.sendKey(KEYS.UP[1]);
     },
@@ -20,7 +20,7 @@ module.exports = {
         KEY_SENDER.sendKey(KEYS.RIGHT[1]);
     },
     rightDown: function () {
-        KEY_SENDER.sendCombination([KEYS.RIGHT[1], KEYS.DOWN[1]]);
+        KEY_SENDER.sendCombination([KEYS.BUTTON_R[1], KEYS.RIGHT[1], KEYS.DOWN[1]]);
         //KEY_SENDER.sendKey(KEYS.RIGHT[1]);
         //KEY_SENDER.sendKey(KEYS.DOWN[1]);
     },
@@ -28,7 +28,7 @@ module.exports = {
         KEY_SENDER.sendKey(KEYS.DOWN[1]);
     },
     leftDown: function () {
-        KEY_SENDER.sendCombination([KEYS.LEFT[1], KEYS.DOWN[1]]);
+        KEY_SENDER.sendCombination([KEYS.BUTTON_R[1], KEYS.LEFT[1], KEYS.DOWN[1]]);
         //KEY_SENDER.sendKey(KEYS.LEFT[1]);
         //KEY_SENDER.sendKey(KEYS.DOWN[1]);
     },
@@ -36,7 +36,7 @@ module.exports = {
         KEY_SENDER.sendKey(KEYS.LEFT[1]);
     },
     leftUp: function () {
-        KEY_SENDER.sendCombination([KEYS.LEFT[1], KEYS.UP[1]]);
+        KEY_SENDER.sendCombination([KEYS.BUTTON_R[1], KEYS.LEFT[1], KEYS.UP[1]]);
         //KEY_SENDER.sendKey(KEYS.LEFT[1]);
         //KEY_SENDER.sendKey(KEYS.UP[1]);
     },
