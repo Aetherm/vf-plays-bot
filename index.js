@@ -1,34 +1,38 @@
-const BOT_VERSION = '0.1-alpha';
+const BOT_VERSION = '0.2-alpha';
 const BOT_COLOR = '0xDE494E';
 const DISCORD = require('discord.js');
 const { PREFIX, TOKEN, GAME} = require('./config.json');
 const KEYS = require('./keys.json');
-const CLIENT = new DISCORD.Client({ partials: ['MESSAGE', 'REACTION'] });
+// const CLIENT = new DISCORD.Client({ partials: ['MESSAGE', 'REACTION'] });
+const CLIENT = new DISCORD.Client({
+    intents: [ DISCORD.Intents.FLAGS.GUILDS, DISCORD.Intents.FLAGS.GUILD_MESSAGES ]
+})
 const INPUT = require('./input.js');
+const {cardinalDirectionsInputRow, diagonalDirectionsInputRow, primaryActionInputRow, secondaryActionInputRow, screenModeConfigRow} = require("./inputButtonRows");
 
 let inputChannel;
 
 //the key mapping explained
-const CONTROLS_MESSAGE = `D-Pad: ${KEYS.UP[0]}, ${KEYS.RIGHT_UP[0]}, ${KEYS.RIGHT[0]}, ${KEYS.RIGHT_DOWN[0]}, `+
+const CONTROLS_MESSAGE = `D-Pad:\n${KEYS.UP[0]}, ${KEYS.RIGHT_UP[0]}, ${KEYS.RIGHT[0]}, ${KEYS.RIGHT_DOWN[0]}, `+
                                     `${KEYS.DOWN[0]}, ${KEYS.LEFT_DOWN[0]}, ${KEYS.LEFT[0]}, ${KEYS.LEFT_UP[0]}\n`+
-                            `A-Button: ${KEYS.BUTTON_A[0]}\n`+
-                            `B-Button: ${KEYS.BUTTON_B[0]}\n`+
-                            `X-Button: ${KEYS.BUTTON_X[0]}\n`+
-                            `Y-Button: ${KEYS.BUTTON_Y[0]}\n`+
-                            `START: ${KEYS.START[0]}\n`+
-                            `SELECT: ${KEYS.SELECT[0]}\n`+
-                            `R-Button: ${KEYS.BUTTON_R[0]}\n`+
-                            `L-Button: ${KEYS.BUTTON_L[0]}\n`
+                            `A-Button:\n${KEYS.BUTTON_A[0]}\n`+
+                            `B-Button:\n${KEYS.BUTTON_B[0]}\n`+
+                            `X-Button:\n${KEYS.BUTTON_X[0]}\n`+
+                            `Y-Button:\n${KEYS.BUTTON_Y[0]}\n`+
+                            `START:\n${KEYS.START[0]}\n`+
+                            `SELECT:\n${KEYS.SELECT[0]}\n`+
+                            `R-Button:\n${KEYS.BUTTON_R[0]}\n`+
+                            `L-Button:\n${KEYS.BUTTON_L[0]}\n`
 
 CLIENT.once('ready', () => {
     console.log('Ready!');
     //sets the bots status
-    CLIENT.user.setActivity(GAME, { type: `PLAYING` }).then();
+    CLIENT.user.setActivity(GAME, { type: `PLAYING` });
 });
 
 CLIENT.login(TOKEN).then();
 
-CLIENT.on('message', message => {
+CLIENT.on('messageCreate', message => {
 
     //not listening to bot posts
     if(message.author.bot) return;
@@ -72,7 +76,7 @@ CLIENT.on('message', message => {
         if (COMMAND === 'ping' && !ARGS.length) {
             // send back "pong!" to the channel the message was sent in
             message.channel.send('pong'+PREFIX).then();
-        } else if (message.member.hasPermission('ADMINISTRATOR')) {
+        } else if (message.member.permissions.has('ADMINISTRATOR')) {
             if (COMMAND === 'controller' && !ARGS.length) {
                 createController(message.channel).then();
             } else if (COMMAND === 'switch' && !ARGS.length){
@@ -81,7 +85,7 @@ CLIENT.on('message', message => {
                 inputChannel = message.channel;
                 message.channel.send("**This channel is now the bots main input channel**\n" +
                     "Post one of the following emojis to make an input : ]\n" +
-                    "**NEW:** write a number between 1 (100 milliseconds) and 40 (4 seconds) behind the emoji\n" +
+                    "Write a number between 1 (100 milliseconds) and 40 (4 seconds) behind the emoji\n" +
                     "to control how long the button is pressed\n" +
                     CONTROLS_MESSAGE).then();
             }
@@ -112,6 +116,14 @@ CLIENT.on('messageReactionAdd', async (reaction, user) => {
         INPUT.setPressFor(17);
         emojiInput(reaction.emoji.name);
     }
+});
+
+//listening to buttons
+CLIENT.on('interactionCreate', interaction => {
+    if (!interaction.isButton()) return;
+
+    emojiInput(interaction.customId);
+    interaction.deferUpdate();
 });
 
 /**
@@ -196,7 +208,7 @@ function emojiInput(emojiName){
 }
 
 /**
- * Creates the message that holds the switch to change screen modes in form of reactions and posts it into the given
+ * Creates the message that holds the switch to change screen modes in form of buttons and posts it into the given
  * channel
  *
  * @param channel The channel where this should be send to.
@@ -205,52 +217,26 @@ async function createScreenSwitch(channel) {
     let reactionEmbed = new DISCORD.MessageEmbed()
         .setColor(BOT_COLOR)
         .setTitle("SCREEN SWITCH")
-        .setDescription("Here you can switch the different screen modes.")
+        .setDescription("Here you can switch between the different screen modes.")
         .addField("description",
             "switching between screen modes:\n0️⃣, 1️⃣, 2️⃣\n"+
-                    "switching primary screen:\n🔄")
+            "switching primary screen:\n🔄")
 
-    channel.send({embed: reactionEmbed}).then(async embedMessage => {
-
-        await embedMessage.react("0️⃣");
-        await embedMessage.react("1️⃣");
-        await embedMessage.react("2️⃣");
-        await embedMessage.react("🔄");
-    });
+    channel.send({embeds: [reactionEmbed], components: [screenModeConfigRow()]});
 }
 
 /**
- * Creates the message that holds the controls in form of reactions and posts it into the given channel
+ * Creates the message that holds the controls in form of buttons and posts it into the given channel
  *
  * @param channel The channel where this should be send to.
  */
 async function createController(channel) {
-
     let reactionEmbed = new DISCORD.MessageEmbed()
         .setColor(BOT_COLOR)
         .setTitle("CONTROLLER")
-        .setDescription("**IMPORTANT**\nDon't click spam! This can result in a temporal *Discord Ban*. "+
-                        "Keep circa half a second between inputs. THIS IS NOT A JOKE. " +
-                        "If you want to be 100% safe, just post the emoji in a text channel with this bot : ]")
+        .setDescription("Click on the respective buttons to make an input!")
         .addField('controls', CONTROLS_MESSAGE)
 
-    channel.send({embed: reactionEmbed}).then(async embedMessage => {
-
-        await embedMessage.react(KEYS.UP[0]);
-        await embedMessage.react(KEYS.RIGHT_UP[0]);
-        await embedMessage.react(KEYS.RIGHT[0]);
-        await embedMessage.react(KEYS.RIGHT_DOWN[0]);
-        await embedMessage.react(KEYS.DOWN[0]);
-        await embedMessage.react(KEYS.LEFT_DOWN[0]);
-        await embedMessage.react(KEYS.LEFT[0]);
-        await embedMessage.react(KEYS.LEFT_UP[0]);
-        await embedMessage.react(KEYS.BUTTON_A[0]);
-        await embedMessage.react(KEYS.BUTTON_B[0]);
-        await embedMessage.react(KEYS.BUTTON_X[0]);
-        await embedMessage.react(KEYS.BUTTON_Y[0]);
-        await embedMessage.react(KEYS.START[0]);
-        await embedMessage.react(KEYS.SELECT[0]);
-        await embedMessage.react(KEYS.BUTTON_R[0]);
-        await embedMessage.react(KEYS.BUTTON_L[0]);
-    });
+    await channel.send({embeds: [reactionEmbed],
+    components: [cardinalDirectionsInputRow(), diagonalDirectionsInputRow(), primaryActionInputRow(), secondaryActionInputRow()]});
 }
